@@ -1,0 +1,12 @@
+{
+  "exec":"ts-node --swc -r tsconfig-paths/register bin/server.ts",
+  "watch": [ "." ],
+  "ignore": [
+    ".git",
+    "node_modules/**/node_modules"
+  ],
+  "env": {
+    "NODE_ENV": "dev"
+  },
+  "ext": "ts,js,json"
+}

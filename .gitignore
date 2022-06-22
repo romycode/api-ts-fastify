@@ -1,0 +1,13 @@
+# editors things
+.idea
+.vscode
+
+# build
+dist
+.tsbuildinfo
+
+# deps
+node_modules
+
+# env's
+.env.*
