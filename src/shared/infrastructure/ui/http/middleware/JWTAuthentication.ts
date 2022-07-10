@@ -1,17 +1,25 @@
-import { JWTProvider }                                           from "@/shared/domain/security/JWTProvider";
-import { FastifyReply, FastifyRequest, HookHandlerDoneFunction } from "fastify";
+import { JWTProvider } from '@/shared/domain/security/JWTProvider'
+import { FastifyRequest } from 'fastify'
+import { Unauthorized } from '@/shared/domain/security/Unauthorized'
 
 export class JWTAuthentication {
-    #provider: JWTProvider
-
-    constructor(provider: JWTProvider) {
-        this.#provider = provider
+    constructor(private provider: JWTProvider) {
+        this.provider = provider
     }
 
-    authenticate(): Function {
-        return ( async (request: FastifyRequest, reply: FastifyReply, done: HookHandlerDoneFunction) => {
-            const token = request.headers['authorization']
-            const payload = this.#provider.decode(token)
-        } )
+    authenticate() {
+        return async (req: FastifyRequest) => {
+            const token = req.headers['authorization']
+
+            if (!token) {
+                throw new Unauthorized()
+            }
+
+            try {
+                this.provider.decode(token.replace('Bearer ', ''))
+            } catch (e) {
+                throw { code: (e as Error).name, message: (e as Error).message }
+            }
+        }
     }
 }

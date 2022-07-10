@@ -12,6 +12,10 @@ down:
 	@ docker container kill $(LIVE_CONTAINER) > /dev/null 2>&1
 	@ docker container rm $(LIVE_CONTAINER) > /dev/null 2>&1
 
-test:
+bash:
+	@ docker run -itw "/opt/api" -v "$(PWD):/opt/api" -v "/home/arm/.pnpm-store:/opt/.pnpm-store" -p "8080:8080" --rm $(PROJECT_NAME) /bin/bash
+
+.PHONY: tests
+tests:
 	@ docker run -itw "/opt/api" -v "$(PWD):/opt/api" --name $(TEST_CONTAINER) $(PROJECT_NAME) npm run tests || true
 	@ docker container rm $(TEST_CONTAINER) > /dev/null 2>&1

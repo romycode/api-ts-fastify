@@ -7,8 +7,8 @@ export class GetHealthController implements Controller {
   }
 
   public handler(): RouteHandlerMethod {
-    return async (_request: FastifyRequest, reply: FastifyReply) => {
-      return reply
+    return async (_req: FastifyRequest, rep: FastifyReply) => {
+      return rep
         .header("Content-Type", "application/json")
         .status(200)
         .send({data: "!! _+_ HEALTH ENDPOINT _+_ !!"})

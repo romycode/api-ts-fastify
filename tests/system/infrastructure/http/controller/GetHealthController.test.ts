@@ -1,10 +1,10 @@
 import { describe, expect, test } from '@jest/globals'
 
-import { app } from '@/app'
+import { server } from '@/server'
 
 describe("GetHealthController", () => {
   test('it should return 200', async () => {
-    const res = await app.inject().get('/health')
+    const res = await server.inject().get('/v1/health')
 
     expect(res.statusCode).toBe(200)
     expect(res.payload).toBe("{\"data\":\"!! _+_ HEALTH ENDPOINT _+_ !!\"}")
