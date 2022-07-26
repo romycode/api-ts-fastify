@@ -3,14 +3,15 @@ import Fastify, { FastifyError } from 'fastify'
 
 // load env
 import { config } from 'dotenv'
-import { join } from 'path'
+import { join } from 'node:path'
 
 // controllers & middlewares
 import { GetHealthController } from '@/system/infrastructure/http/controller/GetHealthController'
 import { GetWelcomeController } from '@/system/infrastructure/http/controller/GetWelcomeController'
-import { JWTAuthentication } from '@/shared/infrastructure/ui/http/middleware/JWTAuthentication'
+import { JWTAuthenticator } from '@/shared/infrastructure/ui/http/middleware/JWTAuthenticator'
 import { FastJWTProvider } from '@/shared/infrastructure/security/FastJWTProvider'
 
+// dotenv load .env files depending on environment
 config({
     override: true,
     path: join(__dirname, '..', `.env${ process.env['NODE_ENV'] ? '.' + process.env['NODE_ENV'] : '' }`),
@@ -32,18 +33,18 @@ const getWelcomeController = new GetWelcomeController()
 const getHealthController = new GetHealthController()
 
 const fastJWTProvider = new FastJWTProvider(process.env['JWT_SECRET'] as string)
-const jwtAuthenticator = new JWTAuthentication(fastJWTProvider)
+const jwtAuthenticator = new JWTAuthenticator(fastJWTProvider)
 
 // v1 routes
 server.register(
     (api, _opts, done) => {
         // Public
         api.register(
-            (instance, _opts, done) => {
-                instance.get(getWelcomeController.route(), getWelcomeController.handler())
-                instance.get(getHealthController.route(), getHealthController.handler())
+            (publicApi, _opts, done) => {
+                publicApi.get(getWelcomeController.route(), getWelcomeController.handler())
+                publicApi.get(getHealthController.route(), getHealthController.handler())
 
-                instance.get('/auth', async (_req, rep) => {
+                publicApi.get('/auth', async (_req, rep) => {
                     return rep.status(200).send(fastJWTProvider.encode({ data: 'validate' }))
                 })
 
@@ -53,8 +54,8 @@ server.register(
 
         // Private
         api.register(
-            (instance, _opts, done) => {
-                instance.addHook('onRequest', jwtAuthenticator.authenticate())
+            (privateApi, _opts, done) => {
+                privateApi.addHook('onRequest', jwtAuthenticator.authenticate())
 
                 done()
             },
@@ -62,9 +63,7 @@ server.register(
 
         done()
     },
-    {
-        prefix: 'v1',
-    },
+    { prefix: 'v1' },
 )
 
 server.setErrorHandler(function (err: FastifyError, _req, rep) {

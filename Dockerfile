@@ -2,6 +2,8 @@ FROM node:latest as BUILDER
 
 WORKDIR /opt/api
 
-RUN npm i -g npm@latest pnpm@latest
+COPY package.json .
+COPY pnpm-lock.yaml .
 
-RUN pnpm config set store-dir /opt/.pnpm-store
+RUN npm i -g npm@latest pnpm@latest \
+    && pnpm config set store-dir /opt/.pnpm-store

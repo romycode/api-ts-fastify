@@ -2,7 +2,7 @@ import { JWTProvider } from '@/shared/domain/security/JWTProvider'
 import { FastifyRequest } from 'fastify'
 import { Unauthorized } from '@/shared/domain/security/Unauthorized'
 
-export class JWTAuthentication {
+export class JWTAuthenticator {
     constructor(private provider: JWTProvider) {
         this.provider = provider
     }
