@@ -1,5 +1,5 @@
-import { JWTProvider } from '@/shared/domain/security/JWTProvider'
 import { FastifyRequest } from 'fastify'
+import { JWTProvider } from '@/shared/domain/security/JWTProvider'
 import { Unauthorized } from '@/shared/domain/security/Unauthorized'
 
 export class JWTAuthenticator {
